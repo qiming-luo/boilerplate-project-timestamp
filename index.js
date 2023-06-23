@@ -31,8 +31,8 @@ app.get("/api/hello", function (req, res) {
 
 // convert timestamp
 const convertDate = require('./convert_time');
-app.get('/api/(:timestamp)?', (req, res)=>{
-  const timeParam = req.params.timestamp;
+app.get('/api/:date?', (req, res)=>{
+  const timeParam = req.params.date;
   console.log(req.params);
   if(!timeParam){
     const unix = Date.now();
