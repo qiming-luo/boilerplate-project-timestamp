@@ -30,33 +30,22 @@ app.get("/api/hello", function (req, res) {
 });
 
 // convert timestamp
-function convertDate(param){
-  const paramToNum = Number(param);
-  let unix;
-  let utc;
-  if(paramToNum){
-      let newdate = new Date(paramToNum);
-      utc = newdate.toUTCString();
-      unix = paramToNum;
+const convertDate = require('./convert_time');
+app.get('/api/(:timestamp)?', (req, res)=>{
+  const timeParam = req.params.timestamp;
+  console.log(req.params);
+  if(!timeParam){
+    const unix = Date.now();
+    const nowDate = new Date(unix);
+    const utc = nowDate.toUTCString();
+    res.json({unix,utc});
   }else{
-      let newdate = new Date(param);
-      utc = newdate.toUTCString();
-      unix = Date.parse(newdate);
+    const resultToSend = convertDate(timeParam);
+    res.json(resultToSend);
   }
   
-  const resObj = {
-      unix,
-      utc
-  }
-
-  return resObj;
-}
-
-app.get('/api/:timestamp', (req, res)=>{
-  const timeParam = req.params.timestamp;
-  const resultToSend = convertDate(timeParam);
-  res.json(resultToSend);
 })
+
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
