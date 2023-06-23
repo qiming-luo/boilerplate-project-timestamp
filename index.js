@@ -4,6 +4,11 @@
 // init project
 var express = require('express');
 var app = express();
+//init dotenv
+require('dotenv').config();
+
+//config morgan
+app.use(require('morgan')('dev'));
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -24,7 +29,34 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+// convert timestamp
+function convertDate(param){
+  const paramToNum = Number(param);
+  let unix;
+  let utc;
+  if(paramToNum){
+      let newdate = new Date(paramToNum);
+      utc = newdate.toUTCString();
+      unix = paramToNum;
+  }else{
+      let newdate = new Date(param);
+      utc = newdate.toUTCString();
+      unix = Date.parse(newdate);
+  }
+  
+  const resObj = {
+      unix,
+      utc
+  }
 
+  return resObj;
+}
+
+app.get('/api/:timestamp', (req, res)=>{
+  const timeParam = req.params.timestamp;
+  const resultToSend = convertDate(timeParam);
+  res.json(resultToSend);
+})
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
